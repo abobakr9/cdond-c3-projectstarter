@@ -220,9 +220,8 @@ jobs:
       # - run: cat ./.circleci/ansible/inventory.txt
       - run:
           name: Configure server and prom
-          working_directory: ./.circleci/ansible
+          working_directory: ./.circleci/ansible #pwd
           command: |
-# pwd
               cat inventory.txt
               ansible-playbook -i inventory.txt configure-server.yml
       # - destroy-environment:
