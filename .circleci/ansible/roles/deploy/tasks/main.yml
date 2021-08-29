@@ -30,18 +30,18 @@
     state: present
 
 - name: "copy compiled files"
-    become: yes
-    synchronize:
-      src: ../../backend/dist
-      dest: /home/ubuntu/uda_backend
-      recursive: true
+  become: yes
+  synchronize:
+    src: ../../backend/dist
+    dest: /home/ubuntu/uda_backend
+    recursive: true
 
 - name: "copy node_modules"
-    become: yes
-    synchronize:
-      src: ../../backend/node_modules
-      dest: /home/ubuntu/uda_backend
-      recursive: true
+  become: yes
+  synchronize:
+    src: ../../backend/node_modules
+    dest: /home/ubuntu/uda_backend
+    recursive: true
 
 
 
