@@ -183,6 +183,7 @@ jobs:
               --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text)
             curl -H "Content-Type: text/plain" -H "token: 84471b09-e153-4ff4-891f-66358b66f271" --request PUT --data "http://$BACKEND_IP:3030" https://api.memstash.io/values/backend-URL
+            
           
       - run:
           name: Ensure front-end infrastructure exist
@@ -302,43 +303,70 @@ jobs:
             echo "memstach-Key=migration_${CIRCLE_WORKFLOW_ID:0:7}"
      # Here's where  you will add some code to rollback on failure      
 
-#   deploy-frontend:
-#     docker:
-#       # Docker image here that supports AWS CLI
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Get backend url
-#           command: |
-#             # your code here
-#             export API_URL="http://${BACKEND_IP}:3030"
-#             echo "${API_URL}"
-#       - run:
-#           name: Deploy frontend objects
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure      
+  deploy-frontend:
+    docker:
+      # Docker image here that supports AWS CLI
+      - image: circleci/node:13.8.0
+    steps:
+      # Checkout code from git
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update && sudo apt-get install -yy less
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+      - run:
+          name: Get backend url
+          working_directory: ./frontend
+          command: |
+            # your code here
+            export API_URL=$(curl -H "token: 84471b09-e153-4ff4-891f-66358b66f271" --request GET https://api.memstash.io/values/backend-URL)
+            echo "${API_URL}"
+            npm i
+            npm run build
+      - run:
+          name: Deploy frontend objects
+          working_directory: ./frontend
+          command: |
+            aws s3 cp ./dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
+            pwd
+      - persist_to_workspace:
+          root: .
+          paths:
+            - frontend/dist
+      # Here's where you will add some code to rollback on failure      
                     
-#   deploy-backend:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Deploy backend
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure  
+  deploy-backend:
+    docker:
+      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+      # Add ssh keys with fingerprint
+      - add_ssh_keys:
+          fingerprints: ["76:d3:26:61:52:59:fc:1b:c0:ee:de:51:d7:4c:c4:3f"]
+      # attach workspace
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install dependencies
+          working_directory: ./.circleci/ansible
+          command: |
+            apk add --update ansible curl rsync openssh nodejs npm
+            pip install awscli
+       - run:
+          name: Deploy backend
+          working_directory: ./.circleci/ansible
+          command: |
+              cat inventory.txt
+              ANSIBLE_HOST_KEY_CHECKING=False
+              ansible-playbook -i inventory.txt deploy-backend.yml
+      # Here's where you will add some code to rollback on failure  
 
 #   smoke-test:
 #     docker:
