@@ -362,6 +362,13 @@ jobs:
             apk add --update ansible curl rsync openssh nodejs npm
             pip install awscli
       - run:
+          name: check existance of dist
+          working_directory: .
+          command: |
+            cd backend
+            pwd
+            ls -la
+      - run:
           name: Deploy backend
           working_directory: ./.circleci/ansible
           command: |
@@ -446,14 +453,15 @@ workflows:
       #     # filters:
       #     #   branches:
       #     #     only: [test-feature-branch]
-      - configure-infrastructure :
-           requires: [deploy-infrastructure]
-      - run-migrations :
-           requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
+      # - configure-infrastructure :
+      #      requires: [deploy-infrastructure]
+      # - run-migrations :
+      #      requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      -- deploy-backend:
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
