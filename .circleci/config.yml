@@ -359,13 +359,13 @@ jobs:
           command: |
             apk add --update ansible curl rsync openssh nodejs npm
             pip install awscli
-       - run:
-          name: Deploy backend
-          working_directory: ./.circleci/ansible
-          command: |
-              cat inventory.txt
-              ANSIBLE_HOST_KEY_CHECKING=False
-              ansible-playbook -i inventory.txt deploy-backend.yml
+      - run:
+        name: Deploy backend
+        working_directory: ./.circleci/ansible
+        command: |
+            cat inventory.txt
+            ANSIBLE_HOST_KEY_CHECKING=False
+            ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure  
 
 #   smoke-test:
