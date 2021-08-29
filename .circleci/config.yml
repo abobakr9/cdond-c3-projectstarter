@@ -365,7 +365,6 @@ jobs:
           name: check existance of dist
           working_directory: .
           command: |
-            cd backend
             pwd
             ls -la
       - run:
