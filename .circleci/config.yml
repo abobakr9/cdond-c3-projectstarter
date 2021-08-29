@@ -395,7 +395,10 @@ jobs:
           name: Get backend url and backend smoke test
           command: |
             export BACKEND_IP=$(curl -H "token: 84471b09-e153-4ff4-891f-66358b66f271" --request GET https://api.memstash.io/values/backend-URL)
-            curl "$BACKEND_URL/api/status"
+            echo ${BACKEND_IP}
+            export API_URL="${BACKEND_IP}/api/status"
+            echo ${API_URL}
+            curl -s --head ${API_URL}
       - run:
           name: Frontend smoke test.
           command: |
