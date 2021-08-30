@@ -237,7 +237,7 @@ jobs:
             apk add tar
             apk add gzip curl
             apk add --update ansible
-      # pip install awscli
+      # pip  install awscli
       - run: cat ./.circleci/ansible/inventory.txt
       - run:
           name: Configure server and prom
